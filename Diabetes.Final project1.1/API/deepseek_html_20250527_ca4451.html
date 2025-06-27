@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التنبؤ بمرض السكري</title>
+    <style>
+        body {
+            font-family: 'Tahoma', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .info-text {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 15px;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 18px;
+            display: none;
+        }
+        .diabetic {
+            background-color: #ffdddd;
+            color: #d63031;
+        }
+        .non-diabetic {
+            background-color: #ddffdd;
+            color: #27ae60;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>نظام التنبؤ بمرض السكري</h1>
+        
+        <form id="diabetesForm">
+            <div class="form-group">
+                <label for="pregnancies">عدد مرات الحمل (للنساء فقط):</label>
+                <input type="number" id="pregnancies" min="0" max="20" required>
+                <span class="info-text">أدخل 0 إذا كنت رجلاً</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="glucose">مستوى الجلوكوز في الدم (mg/dL):</label>
+                <input type="number" id="glucose" min="0" max="300" required>
+                <span class="info-text">القيمة الطبيعية عادة بين 70-140 mg/dL</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="bloodPressure">ضغط الدم (mm Hg):</label>
+                <input type="number" id="bloodPressure" min="0" max="200" required>
+                <span class="info-text">ضغط الدم الانقباضي (الرقم الأعلى)</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="skinThickness">سمك الجلد (mm):</label>
+                <input type="number" id="skinThickness" min="0" max="100" required>
+                <span class="info-text">سمك طية الجلد في منطقة الترايسيبس</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="insulin">مستوى الأنسولين (mu U/ml):</label>
+                <input type="number" id="insulin" min="0" max="1000" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="bmi">مؤشر كتلة الجسم (BMI):</label>
+                <input type="number" id="bmi" min="0" max="70" step="0.1" required>
+                <span class="info-text">الوزن (كجم) / (الطول (م))²</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="diabetesPedigree">وظيفة نسب السكري:</label>
+                <input type="number" id="diabetesPedigree" min="0" max="3" step="0.001" required>
+                <span class="info-text">قيمة تشير إلى تاريخ العائلة مع مرض السكري</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">العمر (سنوات):</label>
+                <input type="number" id="age" min="0" max="120" required>
+            </div>
+            
+            <button type="submit">تحليل النتائج</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+        
+        <div class="footer">
+            <p>هذا النظام يستخدم الذكاء الاصطناعي للتنبؤ باحتمالية الإصابة بمرض السكري</p>
+            <p>النتائج ليست تشخيصاً طبياً - يرجى استشارة الطبيب للحصول على تشخيص دقيق</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('diabetesForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // جمع البيانات من النموذج
+            const formData = {
+                Pregnancies: parseFloat(document.getElementById('pregnancies').value),
+                Glucose: parseFloat(document.getElementById('glucose').value),
+                BloodPressure: parseFloat(document.getElementById('bloodPressure').value),
+                SkinThickness: parseFloat(document.getElementById('skinThickness').value),
+                Insulin: parseFloat(document.getElementById('insulin').value),
+                BMI: parseFloat(document.getElementById('bmi').value),
+                DiabetesPedigreeFunction: parseFloat(document.getElementById('diabetesPedigree').value),
+                Age: parseFloat(document.getElementById('age').value)
+            };
+            
+            // هنا يجب إضافة الكود لإرسال البيانات إلى النموذج والحصول على النتيجة
+            // هذا مثال فقط - يجب استبداله بالاتصال الفعلي بنموذج الذكاء الاصطناعي
+            
+            // محاكاة للنتيجة (يجب استبدالها بالاتصال الحقيقي بالنموذج)
+            const isDiabetic = predictDiabetes(formData);
+            
+            // عرض النتيجة
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            
+            if (isDiabetic) {
+                resultDiv.className = 'result diabetic';
+                resultDiv.innerHTML = '<strong>النتيجة:</strong> هناك احتمالية للإصابة بمرض السكري<br>ننصح بمراجعة الطبيب لإجراء الفحوصات اللازمة';
+            } else {
+                resultDiv.className = 'result non-diabetic';
+                resultDiv.innerHTML = '<strong>النتيجة:</strong> لا توجد علامات على الإصابة بمرض السكري<br>مع ذلك، ننصح بالمحافظة على نمط حياة صحي';
+            }
+            
+            // التمرير إلى النتيجة
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        // هذه الدالة هي للتوضيح فقط - يجب استبدالها باتصال حقيقي بالنموذج
+        function predictDiabetes(data) {
+            // في التطبيق الحقيقي، هنا يتم إرسال البيانات إلى النموذج
+            // هذا مثال مبسط للتوضيح فقط
+            const riskFactors = [
+                data.Glucose > 140,
+                data.BMI > 30,
+                data.Age > 45,
+                data.DiabetesPedigreeFunction > 0.5,
+                data.BloodPressure > 140
+            ];
+            
+            // إذا توفرت 3 عوامل خطر أو أكثر، نعتبر أن هناك احتمالية للإصابة
+            return riskFactors.filter(Boolean).length >= 3;
+        }
+    </script>
+</body>
+</html>
